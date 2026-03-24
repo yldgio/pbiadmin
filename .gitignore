@@ -62,3 +62,8 @@ PowerShellEditorServices.json
 
 # --- Project-specific ---
 skills-lock.json
+
+# pbiadmin project-specific
+profiles.toml
+output/
+runs/

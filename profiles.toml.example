@@ -1,0 +1,11 @@
+# Copy to profiles.toml and fill in your values. NEVER commit profiles.toml.
+
+[tenants.prod]
+tenant_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+client_id  = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+auth_mode  = "service_principal"   # or "interactive"
+
+[tenants.dev]
+tenant_id = "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+client_id  = "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+auth_mode  = "interactive"
