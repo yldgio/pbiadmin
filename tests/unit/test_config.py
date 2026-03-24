@@ -40,3 +40,19 @@ def test_load_profile_returns_profile_config(profiles_toml):
     assert profile.tenant_id == "aaa-prod"
     assert profile.client_id == "bbb-prod"
     assert profile.auth_mode == "service_principal"
+
+
+# ---------------------------------------------------------------------------
+# Cycle 2 — Client secret resolved from environment variable
+# ---------------------------------------------------------------------------
+
+def test_load_profile_resolves_client_secret_from_env(profiles_toml, monkeypatch):
+    monkeypatch.setenv("PBIADMIN_PROD_CLIENT_SECRET", "mysecret")
+    profile = load_profile("prod", config_path=profiles_toml)
+    assert profile.client_secret == "mysecret"
+
+
+def test_load_profile_client_secret_none_when_env_not_set(profiles_toml, monkeypatch):
+    monkeypatch.delenv("PBIADMIN_PROD_CLIENT_SECRET", raising=False)
+    profile = load_profile("prod", config_path=profiles_toml)
+    assert profile.client_secret is None
