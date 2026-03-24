@@ -27,8 +27,18 @@ app.add_typer(migrate.app, name="migrate")
 
 
 @app.callback()
-def _main() -> None:
+def main(
+    ctx: typer.Context,
+    profile: str = typer.Option(
+        None,
+        "--profile",
+        envvar="PBIADMIN_PROFILE",
+        help="Profile name from profiles.toml (overrides PBIADMIN_PROFILE env var).",
+    ),
+) -> None:
     """Power BI / Fabric tenant administration CLI."""
+    ctx.ensure_object(dict)
+    ctx.obj["profile"] = profile
 
 
 if __name__ == "__main__":
