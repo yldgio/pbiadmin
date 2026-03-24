@@ -52,3 +52,27 @@ def test_get_token_sp_returns_access_token(tmp_path, mocker):
 
     assert token == "tok123"
     mock_app.acquire_token_for_client.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# Cycle 5 — Interactive token acquisition
+# ---------------------------------------------------------------------------
+
+def test_get_token_interactive_returns_access_token(tmp_path, mocker):
+    mock_cache = mocker.MagicMock()
+    mock_cache.has_state_changed = False
+    mocker.patch("msal.SerializableTokenCache", return_value=mock_cache)
+
+    mock_app = mocker.MagicMock()
+    mock_app.get_accounts.return_value = []  # no cached accounts → go interactive
+    mock_app.acquire_token_interactive.return_value = {
+        "access_token": "interactive_tok",
+        "token_type": "Bearer",
+    }
+    mocker.patch("msal.PublicClientApplication", return_value=mock_app)
+
+    profile = interactive_profile()
+    token = get_token(profile, cache_dir=tmp_path)
+
+    assert token == "interactive_tok"
+    mock_app.acquire_token_interactive.assert_called_once()
