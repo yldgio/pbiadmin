@@ -56,3 +56,16 @@ def test_load_profile_client_secret_none_when_env_not_set(profiles_toml, monkeyp
     monkeypatch.delenv("PBIADMIN_PROD_CLIENT_SECRET", raising=False)
     profile = load_profile("prod", config_path=profiles_toml)
     assert profile.client_secret is None
+
+
+# ---------------------------------------------------------------------------
+# Cycle 3 — Missing profile raises ConfigError
+# ---------------------------------------------------------------------------
+
+def test_load_profile_raises_config_error_for_unknown_profile(profiles_toml):
+    from pbiadmin.core.errors import ConfigError
+
+    with pytest.raises(ConfigError) as exc_info:
+        load_profile("nonexistent", config_path=profiles_toml)
+
+    assert "nonexistent" in str(exc_info.value)
