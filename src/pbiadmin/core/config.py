@@ -53,8 +53,16 @@ def load_profile(
     """
     path = config_path or _DEFAULT_CONFIG_PATH
 
-    with path.open("rb") as fh:
-        data = tomllib.load(fh)
+    try:
+        with path.open("rb") as fh:
+            data = tomllib.load(fh)
+    except FileNotFoundError:
+        raise ConfigError(
+            f"Config file not found at {path}. "
+            "Create profiles.toml or pass an explicit config_path."
+        )
+    except tomllib.TOMLDecodeError as exc:
+        raise ConfigError(f"Invalid TOML in config file {path}: {exc}")
 
     tenants = data.get("tenants", {})
     if profile_name not in tenants:
@@ -64,6 +72,14 @@ def load_profile(
         )
 
     entry = tenants[profile_name]
+
+    _REQUIRED = ("tenant_id", "client_id", "auth_mode")
+    missing = [f for f in _REQUIRED if f not in entry]
+    if missing:
+        raise ConfigError(
+            f"Profile '{profile_name}' is missing required fields: {missing}. "
+            "Check your profiles.toml."
+        )
 
     env_key = f"PBIADMIN_{profile_name.upper()}_CLIENT_SECRET"
     client_secret = os.environ.get(env_key)

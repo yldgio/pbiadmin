@@ -69,3 +69,32 @@ def test_load_profile_raises_config_error_for_unknown_profile(profiles_toml):
         load_profile("nonexistent", config_path=profiles_toml)
 
     assert "nonexistent" in str(exc_info.value)
+
+
+# ---------------------------------------------------------------------------
+# Review #30 — Config guard: missing file
+# ---------------------------------------------------------------------------
+
+def test_load_profile_raises_config_error_for_missing_file(tmp_path):
+    from pbiadmin.core.errors import ConfigError
+
+    with pytest.raises(ConfigError) as exc_info:
+        load_profile("prod", config_path=tmp_path / "missing.toml")
+
+    assert "not found" in str(exc_info.value).lower()
+
+
+# ---------------------------------------------------------------------------
+# Review #30 — Config guard: missing required fields
+# ---------------------------------------------------------------------------
+
+def test_load_profile_raises_config_error_for_missing_required_fields(tmp_path):
+    from pbiadmin.core.errors import ConfigError
+
+    bad_toml = tmp_path / "profiles.toml"
+    bad_toml.write_text("[tenants.bad]\ntenant_id = \"t1\"\n")  # missing client_id, auth_mode
+
+    with pytest.raises(ConfigError) as exc_info:
+        load_profile("bad", config_path=bad_toml)
+
+    assert "missing required fields" in str(exc_info.value).lower()

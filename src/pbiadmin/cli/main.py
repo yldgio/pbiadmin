@@ -29,7 +29,7 @@ app.add_typer(migrate.app, name="migrate")
 @app.callback()
 def main(
     ctx: typer.Context,
-    profile: str = typer.Option(
+    profile: str | None = typer.Option(
         None,
         "--profile",
         envvar="PBIADMIN_PROFILE",
